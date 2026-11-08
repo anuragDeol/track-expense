@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  background-color: #FBF8F2;
+  background-image: radial-gradient(#E6DFD2 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: #1F1B16;
+  font-family: Nunito, system-ui, sans-serif;
+}
