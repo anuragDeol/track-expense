@@ -1,70 +1,110 @@
-# Getting Started with Create React App
+# Expense Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A simple app to write down what you spend each day and see where your money goes.
 
-## Available Scripts
+![Expense Tracker showing a month of daily expenses, the total, a trend chart and stats](docs/screenshot.png)
 
-In the project directory, you can run:
+## What you can do
 
-### `npm start`
+- **Sign up and log in** so your expenses stay private.
+- **See the whole month at once**, with what you spent each day.
+- **Add, change or delete expenses** by clicking on a day.
+- **See your monthly total**, your highest and lowest spending days, and your daily average.
+- **Follow your spending on a chart** across the month.
+- **Look back at past months** with the arrows next to the month name.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## How to run it on your computer
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+You need [Node.js](https://nodejs.org) installed. The app has two parts that both need to be running: the **server** (saves your data) and the **app** (what you see).
 
-### `npm test`
+### 1. Start the server
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The server lives in its own repo: [track-expense-backend](https://github.com/anuragDeol/track-expense-backend). Download it:
 
-### `npm run build`
+```
+git clone https://github.com/anuragDeol/track-expense-backend.git
+cd track-expense-backend
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Inside that folder, create a file named `.env` with:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+PORT=7000
+MONGO_URI=your MongoDB connection link
+SESSION_SECRET=any long random text
+CLIENT_URL=http://localhost:3000
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Then run:
 
-### `npm run eject`
+```
+npm install
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 2. Start the app
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Inside this project's folder, create a file named `.env` with:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+REACT_APP_API_URL=http://localhost:7000
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Then run:
 
-## Learn More
+```
+npm install
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The app opens in your browser at http://localhost:3000. Create an account and start adding expenses.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## For developers
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Tech stack
 
-### Analyzing the Bundle Size
+- **Frontend:** React 19, Tailwind CSS 3, built with Create React App (`react-scripts`).
+- **Backend** ([track-expense-backend](https://github.com/anuragDeol/track-expense-backend)): Node.js, Express 5, MongoDB with Mongoose.
+- **Auth:** session cookies (`express-session` stored in MongoDB via `connect-mongo`), passwords hashed with `bcryptjs`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Project structure (`src/`)
 
-### Making a Progressive Web App
+```
+api/api.js          All backend calls in one place
+hooks/useAuth.js    Login state: check session, login, register, logout
+hooks/useExpenses   Loads expenses and keeps them in sync on add / edit / delete
+utils.js            Date keys, money formatting, month building, stats, chart path
+components/         UI pieces (Dashboard, TrendCard, DailyTable, DayModal, ...)
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+`App` checks the session, then shows either `AuthScreen` or `Dashboard`. `Dashboard` builds one row per day of the selected month and passes it to the cards, table and day popup.
 
-### Advanced Configuration
+### How data works
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Amounts are **whole rupees (INR)** in the UI and **paise** (×100) on the server; `api.js` converts both ways.
+- Each expense belongs to a day, stored as `"YYYY-MM-DD"`.
+- Every request sends the session cookie (`credentials: 'include'`). A `401` logs the user out.
+- Future days can't have expenses; stats and the chart only count days up to today.
 
-### Deployment
+### API endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/api/auth/me` | Current user (from session) |
+| POST | `/api/auth/register` | Create account |
+| POST | `/api/auth/login` | Log in |
+| POST | `/api/auth/logout` | Log out |
+| GET | `/api/expense/get-expenses` | All of the user's expenses |
+| POST | `/api/expense/add-expense` | Add one expense |
+| PATCH | `/api/expense/update-expense/:id` | Change an amount |
+| DELETE | `/api/expense/delete-expense/:id` | Delete an expense |
 
-### `npm run build` fails to minify
+### Scripts
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+| Command | What it does |
+| --- | --- |
+| `npm start` | Dev server at http://localhost:3000 |
+| `npm run build` | Production build into `build/` |
+| `npm test` | Run tests |
