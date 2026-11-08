@@ -2,7 +2,7 @@
 
 A simple app to write down what you spend each day and see where your money goes.
 
-<!-- ![Expense Tracker showing a month of daily expenses, the total, a trend chart and stats](docs/screenshot.png) -->
+![Expense Tracker showing a month of daily expenses, the total, a trend chart and stats](docs/screenshot.png)
 
 ## What you can do
 
