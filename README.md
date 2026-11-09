@@ -1,6 +1,6 @@
 # Expense Tracker
 
-Track every rupee you spend, day by day, and know exactly where your money goes.
+Track every rupee you spend, day by day, and know exactly where your money goes. Just sign up and start tracking your expenses: https://track-expense-self.vercel.app/
 
 ![Expense Tracker showing a month of daily expenses, the total, a trend chart and stats](docs/screenshot-1.png)
 
